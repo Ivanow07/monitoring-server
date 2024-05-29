@@ -1,7 +1,15 @@
 #!/bin/bash
 
-cpu_model=$(lscpu | grep 'Model name' | awk -F: '{print $2}' | xargs)
-cpu_cores=$(lscpu | grep '^CPU(s):' | awk -F: '{print $2}' | xargs)
+# Get CPU model
+cpu_model=$(lscpu | grep "Model name" | sed -r 's/Model name:\s{1,}//g')
+
+# Get number of CPU cores
+cpu_cores=$(nproc)
+
+# Get CPU usage
 cpu_usage=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}')
 
-curl -X POST -H "Content-Type: application/json" -d "{\"model\":\"$cpu_model\", \"cores\":\"$cpu_cores\", \"usage\":\"$cpu_usage\"}" http://130.61.241.28:8000/update/cpu
+# Output results
+echo "$cpu_model"
+echo "$cpu_cores"
+echo "$cpu_usage"
