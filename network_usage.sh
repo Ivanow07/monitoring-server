@@ -1,9 +1,17 @@
 #!/bin/bash
 
-# Network interface (you might need to change eth0 to your actual network interface)
-interface=eth0
+# Network interface to monitor (you can change 'eth0' to your specific interface if needed)
+INTERFACE="eth0"
 
-network_in=$(cat /sys/class/net/$interface/statistics/rx_bytes)
-network_out=$(cat /sys/class/net/$interface/statistics/tx_bytes)
+# Get network usage
+rx_bytes=$(cat /sys/class/net/$INTERFACE/statistics/rx_bytes)
+tx_bytes=$(cat /sys/class/net/$INTERFACE/statistics/tx_bytes)
+sleep 1
+rx_bytes_new=$(cat /sys/class/net/$INTERFACE/statistics/rx_bytes)
+tx_bytes_new=$(cat /sys/class/net/$INTERFACE/statistics/tx_bytes)
 
-curl -X POST -H "Content-Type: application/json" -d "{\"in\":\"$network_in\", \"out\":\"$network_out\"}" http://130.61.241.28:8000/update/network
+rx_rate=$((($rx_bytes_new - $rx_bytes) / 1024))
+tx_rate=$((($tx_bytes_new - $tx_bytes) / 1024))
+
+# Output results
+echo "$rx_rate,$tx_rate"
