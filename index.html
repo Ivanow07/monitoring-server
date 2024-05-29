@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Monitoring Dashboard</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding-top: 20px;
+        }
+        .metric {
+            background-color: #1e1e1e;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        h1, h2 {
+            color: #ffffff;
+        }
+        p {
+            color: #bbbbbb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Server Monitoring Dashboard</h1>
+        <div id="metrics"></div>
+    </div>
+
+    <script>
+        async function fetchMetrics() {
+            const response = await fetch('/metrics');
+            const data = await response.json();
+            const metricsDiv = document.getElementById('metrics');
+            metricsDiv.innerHTML = '';
+
+            data.forEach(metric => {
+                const metricDiv = document.createElement('div');
+                metricDiv.className = 'metric';
+                metricDiv.innerHTML = `
+                    <h2>Timestamp: ${metric.timestamp}</h2>
+                    <p>CPU Usage: ${metric.cpu}%</p>
+                    <p>Memory Usage: ${metric.memory}%</p>
+                    <p>Disk Usage: ${metric.disk}%</p>
+                    <p>Network Usage: ${metric.network} bytes</p>
+                `;
+                metricsDiv.appendChild(metricDiv);
+            });
+        }
+
+        setInterval(fetchMetrics, 10000);
+        fetchMetrics();
+    </script>
+</body>
+</html>
